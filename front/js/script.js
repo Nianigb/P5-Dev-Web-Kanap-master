@@ -21,7 +21,7 @@
 // afficherproduit();
 fetch("http://localhost:3000/api/products")
   .then(function(response){
-    if (response.ok){return response.json;}
+    if (response.ok){return response.json();}
   })
   .then(function(article){
     afficherproduits(article);
