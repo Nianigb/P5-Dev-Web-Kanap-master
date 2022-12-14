@@ -39,26 +39,40 @@ function infosproduit(article) {
   }
 }
 
-// Récupération de la quantité de l'article sélectionné
-var quantite = document.querySelector("#quantity").value;
-
-// Création d'un objet panier vide
-let panier = {};
-
 // Fonction pour ajouter un produit au panier
-function ajouterAuPanier(id, quantite, couleur) {
-  // Si le produit n'existe pas dans le panier, on l'ajoute avec la quantité spécifiée
-  console.log(panier[id])
-  if (!panier[id]) {
-    panier[id] = {
-      quantite: quantite,
-      couleur: couleur
-    };
+function ajouterAuPanier(id, nom, couleur, quantite) {
+  // Récupérer les données du panier à partir de localStorage
+  let panier = JSON.parse(localStorage.getItem('panier'));
+  // Si le panier n'existe pas encore, création d'un panier vide
+  if (!panier) {
+    panier = {};
   }
-  // Si le produit existe déjà dans le panier, on ajoute la quantité spécifiée à la quantité actuelle
-  else {
-    panier[id].quantite += quantite;
-    panier[id].couleur = couleur;
+  // Si le produit a déjà été ajouté au panier
+  if (panier[id]) {
+    // Si la couleur du produit existe déjà dans le panier, ajouter la quantité au produit existant
+    if (panier[id][couleur]) {
+      // Récupération de la quantité d'un produit déjà existant
+      let oldQuantity = getQuantity(id, couleur);
+      panier[id][couleur] = oldQuantity + quantite;
+    } else {
+      // Si la couleur du produit n'existe pas encore dans le panier, ajouter la quantité en fonction de la couleur
+      panier[id][couleur] = quantite;
+    }
+  } else {
+    // Si le produit n'a pas encore été ajouté au panier, ajouter l'id du produit avec la quantité en fonction de la couleur
+    panier[id] = { [couleur]: quantite };
+  }
+
+  // Fonction pour récupérer la quantité d'un produit déjà mis dans le panier, en fonction de sa couleur
+  function getQuantity(id, couleur) {
+    // Récupérer les données du panier à partir de localStorage
+    let panier = JSON.parse(localStorage.getItem('panier'));
+    // Si le panier n'existe pas ou si le produit n'existe pas dans le panier, retourner 0
+    if (!panier || !panier[id] || !panier[id][couleur]) {
+      return 0;
+    }
+    // Retourner la quantité du produit
+    return panier[id][couleur];
   }
 
   // Mise à jour du panier dans localstorage
@@ -83,7 +97,8 @@ recupererPanier();
 let boutonAjouter = document.getElementById('addToCart');
 boutonAjouter.addEventListener('click', function () {
   let produit = id;
-  let quantite = parseInt(document.getElementById('quantity').value);
+  let name = nom;
   let couleur = document.getElementById('colors').value;
-  ajouterAuPanier(produit, quantite, couleur);
+  let quantite = parseInt(document.getElementById('quantity').value);
+  ajouterAuPanier(produit, name, couleur, quantite);
 });
