@@ -40,7 +40,7 @@ function infosproduit(article) {
 }
 
 // Fonction pour ajouter un produit au panier
-function ajouterAuPanier(id, nom, couleur, quantite) {
+function ajouterAuPanier(id, couleur, quantite) {
   // Récupérer les données du panier à partir de localStorage
   let panier = JSON.parse(localStorage.getItem('panier'));
   // Si le panier n'existe pas encore, création d'un panier vide
@@ -60,7 +60,12 @@ function ajouterAuPanier(id, nom, couleur, quantite) {
     }
   } else {
     // Si le produit n'a pas encore été ajouté au panier, ajouter l'id du produit avec la quantité en fonction de la couleur
-    panier[id] = { [couleur]: quantite };
+    panier[id] = {
+      "id": id,
+      "nom": nom.innerHTML,
+      "couleur": couleur,
+      "quantite": quantite,
+    };
   }
 
   // Fonction pour récupérer la quantité d'un produit déjà mis dans le panier, en fonction de sa couleur
@@ -97,8 +102,7 @@ recupererPanier();
 let boutonAjouter = document.getElementById('addToCart');
 boutonAjouter.addEventListener('click', function () {
   let produit = id;
-  let name = nom;
   let couleur = document.getElementById('colors').value;
   let quantite = parseInt(document.getElementById('quantity').value);
-  ajouterAuPanier(produit, name, couleur, quantite);
+  ajouterAuPanier(produit, couleur, quantite);
 });

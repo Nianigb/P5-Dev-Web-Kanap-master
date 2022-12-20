@@ -8,35 +8,72 @@
 // var couleur = document.querySelector("#colors");
 // var quantite = document.querySelector(".totalQuantity");
 
-let panier = JSON.parse(localStorage.getItem('panier'));
+let panier = localStorage.getItem('panier');
+let tableaupanier = [];
+if (panier) {
+  tableaupanier = JSON.parse(panier);
+  
+}
 let prix = 0;
 
-for (let produitlocal=0; produitlocal<panier.length; produitlocal++) {
-  const produitapi = "http://localhost:3000/api/products/" + panier[produitlocal].id;
+for (let product in tableaupanier) {
+  const produitapi = "http://localhost:3000/api/products/" + product.id;
   fetch(produitapi)
-  .then(function (response) {
-    if (response.ok) { return response.json(); }
-  })
-  .then(function (article) {
-   afficherproduits(article);
-  })
-  .catch((error) => alert("message" + error));
-  function afficherproduits(response){
-    let articlepanier=document.createElement("article");
+    .then(function (response) {
+      if (response.ok) { return response.json(); }
+    })
+    .then(function (article) {
+      afficherproduits(article);
+    })
+    .catch((error) => alert("message" + error));
+  function afficherproduits(article) {
+    let articlepanier = document.createElement("article");
     articlepanier.classList.add("cart__item");
-    articlepanier.dataset.id=panier[produitlocal].id;
-    articlepanier.dataset.color=panier[produitlocal].couleur;
+    articlepanier.dataset.id = product.id;
+    articlepanier.dataset.color = product.couleur;
     document.getElementById("cart__items").appendChild(articlepanier);
-    
-    let divcart=document.createElement("div");
+
+    let divcart = document.createElement("div");
     divcart.classList.add("cart__item__img");
     articlepanier.appendChild(divcart);
 
-    let imgcart=document.createElement("img");
-    imgcart.src=response.imageUrl;
-    imgcart.alt=response.altTxt;
-    divcart.appendChild(imgcart);
+    // let imgcart = document.createElement("img");
+    // imgcart.src = article.imageUrl;
+    // imgcart.alt = article.altTxt;
+    // divcart.appendChild(imgcart);
 
+    let contenupanier = document.createElement("div");
+    contenupanier.classList.add("cart__item__content");
+    articlepanier.appendChild("contenupanier");
+
+    let description = document.createElement("div");
+    description.classList.add("cart__item__content__description");
+    contenupanier.appendChild(description);
+
+    let h2 = document.createElement("h2");
+    h2.innerHTML = product.nom;
+    description.appendChild(h2);
+
+    let p = document.createElement("p")
+    p.textContent = product.couleur;
+    description.appendChild(p);
+
+    let prix = document.createElement("p")
+    prix.textContent = article.price;
+    description.appendChild(prix);
+
+    let parametrespanier = document.createElement("div");
+    parametrespanier.classList.add("cart__item__content__settings");
+    contenupanier.appendChild(parametrespanier);
+
+    let quantitepanier = document.createElement("div");
+    quantitepanier.classList.add("cart__item__content__settings__quantity");
+    parametrespanier.appendChild(quantitepanierr);
+
+    let p2 = document.createElement("p")
+    p2.textContent = "Qté :" ;
+    quantitepanier.appendChild(p2);
+  
   }
 }
 
@@ -50,19 +87,43 @@ for (let produitlocal=0; produitlocal<panier.length; produitlocal++) {
 //     let produits = document.getElementById('cart__items');
 
 //     // Pour chaque produit dans le panier, on crée un élément HTML qui affiche l'ID, la quantité et la couleur
-//     for (let id of panier) {
-//       let produit = id;
+//     for (let id in panier) {
+//       let produit = panier[id];
 //       if (produit) {
-//         // Pour chaque couleur du produit dans la panier, on récupère sa valeur
-//         for (let couleur of produit) {
-//           let element = document.createElement('div');
-//           let contenu = `ID : ${id} - Couleur : ${couleur} - Quantité : ${produit.quantite}`;
-//           element.textContent = contenu; // on affiche le contenu du produit dans l'élément HTML
-//           produits.appendChild(element); // on ajoute l'élément HTML dans la div "cart__items"
-//         }
+//         let element = document.createElement('div');
+//         let contenu = `Nom : ${produit.nom} - Couleur : ${produit.couleur} - Quantité : ${produit.quantite}`;
+//         element.textContent = contenu; // on affiche le contenu du produit dans l'élément HTML
+//         produits.appendChild(element); // on ajoute l'élément HTML dans la div "cart__items"
 //       }
 //     }
 //   }
 // }
 
 // affichageProduits();
+
+// Fonction qui va retirer un produit du panier en cours
+function retirerArticle(product) {
+  //Retrait de l'article dans la liste précédente
+  panier = panier.filter(a => a.id != product.id);
+  savePanier(panier);
+}
+
+// Fonction pour sauvegarder le panier
+function savePanier(panier) {
+  // Mise à jour du panier dans localstorage
+  localStorage.setItem('panier', JSON.stringify(panier));
+}
+
+// Fonction ajouter ou retirer un article du panier en cours
+function changerQuantite(product, quantite) {
+  // Nouvelle quantite de l'article
+  let nouveauProduit = panier.find(p => p.id == product.id);
+  if (nouveauProduit != undefined) {
+    nouveauProduit.quantite += quantite;
+  }
+  // Mise à jour du panier
+  savePanier(panier);
+}
+
+
+
