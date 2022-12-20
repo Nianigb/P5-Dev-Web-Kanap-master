@@ -16,66 +16,108 @@ if (panier) {
 }
 let prix = 0;
 
-for (let product in tableaupanier) {
-  const produitapi = "http://localhost:3000/api/products/" + product.id;
-  fetch(produitapi)
-    .then(function (response) {
-      if (response.ok) { return response.json(); }
+async function idproduit (id) {
+  return new Promise((bonnevaleur,mauvaisevaleur) =>{
+    fetch(`http://localhost:3000/api/products/${id}`)
+    .then((response)=> response.json())
+    .then((valeur)=>{
+      bonnevaleur(valeur)
     })
-    .then(function (article) {
-      afficherproduits(article);
-    })
-    .catch((error) => alert("message" + error));
-  function afficherproduits(article) {
-    let articlepanier = document.createElement("article");
-    articlepanier.classList.add("cart__item");
-    articlepanier.dataset.id = product.id;
-    articlepanier.dataset.color = product.couleur;
-    document.getElementById("cart__items").appendChild(articlepanier);
+    .catch((error) => mauvaisevaleur("message" + error));
+  })
+}
 
-    let divcart = document.createElement("div");
-    divcart.classList.add("cart__item__img");
-    articlepanier.appendChild(divcart);
+async function infosproduit(){
+  let produit = "";
+  for (let indice of tableaupanier){
+    const idproduitpanier = await idproduit(indice.id);
+    produit += `
+    <article class="cart__item" data-id="${indice.id}" data-color="{product-color}">
+    <div class="cart__item__img">
+      <img src="${idproduitpanier.imageUrl}" alt="${idproduitpanier.altTxt}">
+    </div>
+    <div class="cart__item__content">
+      <div class="cart__item__content__description">
+        <h2>${indice.nom}</h2>
+        <p>${indice.couleur}</p>
+        <p>${idproduitpanier.price}</p>
+      </div>
+      <div class="cart__item__content__settings">
+        <div class="cart__item__content__settings__quantity">
+          <p>Qté : </p>
+          <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${indice.quantite}">
+        </div>
+        <div class="cart__item__content__settings__delete">
+          <p class="deleteItem">Supprimer</p>
+        </div>
+      </div>
+    </div>
+  </article
+    `;
 
-    // let imgcart = document.createElement("img");
-    // imgcart.src = article.imageUrl;
-    // imgcart.alt = article.altTxt;
-    // divcart.appendChild(imgcart);
-
-    let contenupanier = document.createElement("div");
-    contenupanier.classList.add("cart__item__content");
-    articlepanier.appendChild("contenupanier");
-
-    let description = document.createElement("div");
-    description.classList.add("cart__item__content__description");
-    contenupanier.appendChild(description);
-
-    let h2 = document.createElement("h2");
-    h2.innerHTML = product.nom;
-    description.appendChild(h2);
-
-    let p = document.createElement("p")
-    p.textContent = product.couleur;
-    description.appendChild(p);
-
-    let prix = document.createElement("p")
-    prix.textContent = article.price;
-    description.appendChild(prix);
-
-    let parametrespanier = document.createElement("div");
-    parametrespanier.classList.add("cart__item__content__settings");
-    contenupanier.appendChild(parametrespanier);
-
-    let quantitepanier = document.createElement("div");
-    quantitepanier.classList.add("cart__item__content__settings__quantity");
-    parametrespanier.appendChild(quantitepanierr);
-
-    let p2 = document.createElement("p")
-    p2.textContent = "Qté :" ;
-    quantitepanier.appendChild(p2);
-  
   }
 }
+
+// for (let product in tableaupanier) {
+//   const produitapi = "http://localhost:3000/api/products/" + product.id;
+//   fetch(produitapi)
+//     .then(function (response) {
+//       if (response.ok) { return response.json(); }
+//     })
+//     .then(function (article) {
+//       afficherproduits(article);
+//     })
+//     .catch((error) => alert("message" + error));
+//   function afficherproduits(article) {
+//     let articlepanier = document.createElement("article");
+//     articlepanier.classList.add("cart__item");
+//     articlepanier.dataset.id = product.id;
+//     articlepanier.dataset.color = product.couleur;
+//     document.getElementById("cart__items").appendChild(articlepanier);
+
+//     let divcart = document.createElement("div");
+//     divcart.classList.add("cart__item__img");
+//     articlepanier.appendChild(divcart);
+
+//     // let imgcart = document.createElement("img");
+//     // imgcart.src = article.imageUrl;
+//     // imgcart.alt = article.altTxt;
+//     // divcart.appendChild(imgcart);
+
+//     let contenupanier = document.createElement("div");
+//     contenupanier.classList.add("cart__item__content");
+//     articlepanier.appendChild("contenupanier");
+
+//     let description = document.createElement("div");
+//     description.classList.add("cart__item__content__description");
+//     contenupanier.appendChild(description);
+
+//     let h2 = document.createElement("h2");
+//     h2.innerHTML = product.nom;
+//     description.appendChild(h2);
+
+//     let p = document.createElement("p")
+//     p.textContent = product.couleur;
+//     description.appendChild(p);
+
+//     let prix = document.createElement("p")
+//     prix.textContent = article.price;
+//     description.appendChild(prix);
+
+//     let parametrespanier = document.createElement("div");
+//     parametrespanier.classList.add("cart__item__content__settings");
+//     contenupanier.appendChild(parametrespanier);
+
+//     let quantitepanier = document.createElement("div");
+//     quantitepanier.classList.add("cart__item__content__settings__quantity");
+//     parametrespanier.appendChild(quantitepanierr);
+
+//     let p2 = document.createElement("p")
+//     p2.textContent = "Qté :" ;
+//     quantitepanier.appendChild(p2);
+  
+//   }
+// }
 
 // // Fonction qui va afficher les produits sur la page panier
 // function affichageProduits(response) {
