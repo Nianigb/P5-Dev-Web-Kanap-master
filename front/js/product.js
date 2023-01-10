@@ -42,46 +42,61 @@ function infosproduit(article) {
 // Fonction pour ajouter un produit au panier
 function ajouterAuPanier(id, couleur, quantite) {
   // Récupérer les données du panier à partir de localStorage
-  let panier = JSON.parse(localStorage.getItem('panier'));
+  let panier = localStorage.getItem('panier');
   // Si le panier n'existe pas encore, création d'un panier vide
-  if (!panier) {
-    panier = {};
+  let tableauProduit = [];
+  if (panier) {
+    tableauProduit = JSON.parse(panier);
   }
-  // Si le produit a déjà été ajouté au panier
-  if (panier[id]) {
+  // Si le produit a déjà été ajouté au panier alors j'effectue une recherche dans le tableau des produits en utilisant la fonction find
+  let resultFind = tableauProduit.find(
+    (el) => el.id === id && el.couleur === couleur
+  );
+  if (resultFind) {
     // Si la couleur du produit existe déjà dans le panier, ajouter la quantité au produit existant
-    if (panier[id][couleur]) {
+    
       // Récupération de la quantité d'un produit déjà existant
       let oldQuantity = getQuantity(id, couleur);
-      panier[id][couleur] = oldQuantity + quantite;
-    } else {
+      resultFind.quantite = oldQuantity + quantite;
+      localStorage.setItem("panier", JSON.stringify(tableauProduit));
+    /* else {
       // Si la couleur du produit n'existe pas encore dans le panier, ajouter la quantité en fonction de la couleur
-      panier[id][couleur] = quantite;
-    }
+      //panier[id][couleur] = quantite;
+      panier[id].push({ id: id, couleur: document.getElementById('colors').value, quantite: parseInt(document.getElementById('quantity').value) });
+      localStorage.setItem("cart", JSON.stringify(panier[id]));
+    } */
   } else {
     // Si le produit n'a pas encore été ajouté au panier, ajouter l'id du produit avec la quantité en fonction de la couleur
-    panier[id] = {
+    let paniernew = {
       "id": id,
-      "nom": nom.innerHTML,
       "couleur": couleur,
       "quantite": quantite,
     };
+    tableauProduit.push({ id: paniernew.id, couleur: paniernew.couleur, quantite: paniernew.quantite });
+    localStorage.setItem("panier", JSON.stringify(tableauProduit));
   }
 
-  // Fonction pour récupérer la quantité d'un produit déjà mis dans le panier, en fonction de sa couleur
+  // Fonction pour récupérer la quantité d'un produit déjà mis dans le panier, en fonction de sa couleur et de son id
   function getQuantity(id, couleur) {
+    let qte=0;
+    // Boucle sur la liste des produits présents dans le panier
+    for(let kanap of tableauProduit){
+      if (kanap.id === id && kanap.couleur === couleur){
+        qte = kanap.quantite;
+      }
+    }
     // Récupérer les données du panier à partir de localStorage
-    let panier = JSON.parse(localStorage.getItem('panier'));
+    /* let panier = JSON.parse(localStorage.getItem('panier'));
     // Si le panier n'existe pas ou si le produit n'existe pas dans le panier, retourner 0
     if (!panier || !panier[id] || !panier[id][couleur]) {
       return 0;
-    }
+    }*/
     // Retourner la quantité du produit
-    return panier[id][couleur];
+    return qte; 
   }
 
   // Mise à jour du panier dans localstorage
-  localStorage.setItem('panier', JSON.stringify(panier));
+  
 }
 
 // Fonction pour récupérer le panier à partir de localstorage
