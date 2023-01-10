@@ -253,72 +253,48 @@ function emailValid(mail) {
     return true;
   }
 }
-
-// Au moment du clic pour commander
+// Au moment du clic pour commander,
+// permet de retrouver le numéro de commande et de rediriger vers une page de confirmation
 commander.addEventListener('click', () => {
-  let listeform = {
-    "prenom": prenom.value,
-    "nom": nom.value,
-    "adresse": adresse.value,
-    "ville": ville.value,
-    "mail": mail.value,
-  }
   // Vérification des valeurs valides du formulaire client
   if (firstname && lastname && email && city && adress) {
-    formConfirm(listeform);
+    let contact = {
+      firstName: document.querySelector("#firstName").value,
+      lastName: document.querySelector("#lastName").value,
+      address: document.querySelector("#address").value,
+      city: document.querySelector("#city").value,
+      email: document.querySelector("#email").value,
+    };
+    // Tableau qui contient les id du local storage
+    let products = [];
+    for (let eltpanier of tableaupanier) {
+      products.push(eltpanier.id);
+    }
+
+    // requête post envoi des données au formulaire pour effectuer la commande 
+    const headers = {
+      "Content-Type": "application/json"
+    }
+
+    fetch("http://localhost:3000/api/products/order", {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify({
+        contact: contact,
+        products: products,
+      }),
+    })
+      .then((response) => response.json())
+      .then((valeur) => {
+        let id = valeur.orderId;
+        localStorage.setItem("objet", id);
+        location.href = "confirmation.html?id=" + id;
+      })
+      .finally((end) =>
+        localStorage.clear())
   }
   else {
     alert("Erreur");
   }
-  let idlocalstorage = [];
-  for (let eltpanier of tableaupanier) {
-    idlocalstorage.push(eltpanier.id);
-  }
-
-  // création d'un objet contenant l'id et les données du formulaire 
-
-  let dataform = { listeform, idlocalstorage }
-
-  // requête post envoi des données au formulaire pour effectuer la commande 
-
-  const options = {
-    method: "POST",
-    headers: {
-      "accept": "application/json",
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(dataform),
-  };
-
-  fetch("http://localhost:3000/api/products/order", options)
-    .then((response) => {
-      if (response.status != 201) {
-        alert("erreur serveur")
-      }
-      return response.json()
-    })
-    .then( (valeur) => {
-      const Id = valeur.orderId;
-      if (Id === false) {
-        return;
-      }
-      else {
-        localStorage.setItem("objet", valeur.orderId);
-        document.location.href = "confirmation.html?id=" + Id;
-      }
-
-    })
-  console.log(valeur.orderId)
-    // vide du local storage 
-    .finally(function (end) {
-      localStorage.clear();
-    })
 })
-
-// fonction qui permet de retrouver le numéro de commande et de rediriger vers une page de confirmation
-function formConfirm(listeform) {
-
-  // Tableau qui contient les id du local storage
-  
-}
 
