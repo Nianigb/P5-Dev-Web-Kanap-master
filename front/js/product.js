@@ -54,17 +54,16 @@ function ajouterAuPanier(id, couleur, quantite) {
   );
   if (resultFind) {
     // Si la couleur du produit existe déjà dans le panier, ajouter la quantité au produit existant
-    
-      // Récupération de la quantité d'un produit déjà existant
-      let oldQuantity = getQuantity(id, couleur);
-      resultFind.quantite = oldQuantity + quantite;
+
+    // Récupération de la quantité d'un produit déjà existant
+    let oldQuantity = getQuantity(id, couleur);
+    resultFind.quantite = oldQuantity + quantite;
+    if (resultFind.quantite > 0 && resultFind.quantite <= 100) {
       localStorage.setItem("panier", JSON.stringify(tableauProduit));
-    /* else {
-      // Si la couleur du produit n'existe pas encore dans le panier, ajouter la quantité en fonction de la couleur
-      //panier[id][couleur] = quantite;
-      panier[id].push({ id: id, couleur: document.getElementById('colors').value, quantite: parseInt(document.getElementById('quantity').value) });
-      localStorage.setItem("cart", JSON.stringify(panier[id]));
-    } */
+    }
+    else {
+      alert("erreur quantité");
+    }
   } else {
     // Si le produit n'a pas encore été ajouté au panier, ajouter l'id du produit avec la quantité en fonction de la couleur
     let paniernew = {
@@ -78,25 +77,18 @@ function ajouterAuPanier(id, couleur, quantite) {
 
   // Fonction pour récupérer la quantité d'un produit déjà mis dans le panier, en fonction de sa couleur et de son id
   function getQuantity(id, couleur) {
-    let qte=0;
+    let qte = 0;
     // Boucle sur la liste des produits présents dans le panier
-    for(let kanap of tableauProduit){
-      if (kanap.id === id && kanap.couleur === couleur){
+    for (let kanap of tableauProduit) {
+      if (kanap.id === id && kanap.couleur === couleur) {
         qte = kanap.quantite;
       }
     }
-    // Récupérer les données du panier à partir de localStorage
-    /* let panier = JSON.parse(localStorage.getItem('panier'));
-    // Si le panier n'existe pas ou si le produit n'existe pas dans le panier, retourner 0
-    if (!panier || !panier[id] || !panier[id][couleur]) {
-      return 0;
-    }*/
-    // Retourner la quantité du produit
-    return qte; 
+    return qte;
   }
 
   // Mise à jour du panier dans localstorage
-  
+
 }
 
 // Fonction pour récupérer le panier à partir de localstorage
@@ -119,5 +111,10 @@ boutonAjouter.addEventListener('click', function () {
   let produit = id;
   let couleur = document.getElementById('colors').value;
   let quantite = parseInt(document.getElementById('quantity').value);
-  ajouterAuPanier(produit, couleur, quantite);
+  if (couleur) {
+    ajouterAuPanier(produit, couleur, quantite);
+  }
+  else {
+    alert("erreur couleur");
+  }
 });

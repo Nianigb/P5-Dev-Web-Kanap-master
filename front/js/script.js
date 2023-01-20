@@ -1,24 +1,4 @@
-// const api="http://localhost:3000/api/products";
-// let afficherproduit=function(){
-//     fetch("http://localhost:3000/api/products")
-//       .then((response)=>response.json)
-//       .then((data)=>{
-//         const sectionproduit=document.getElementById("items");
-//         for(let produits=0;produits<data.length;produits++) {
-//             const infoproduit=`
-//             <a href="./product.html?id=${data[produits]._id}">
-//             <article>
-//               <img src="${data[produits].imageUrl}" alt="${data[produits].altTxt}, ${data[produits].name}">
-//               <h3 class="productName">${data[produits].name}</h3>
-//               <p class="productDescription">${data[produits].description}</p>
-//             </article>
-//           </a>`;
-//           sectionproduit.innerHTML +=infoproduit;
-//         }
-//       })
-//       .catch((error)=>alert("message"+ error));
-// };
-// afficherproduit();
+// Faire appel à L'API pour affaicher les produits sur la page d'acceuil
 fetch("http://localhost:3000/api/products")
   .then(function(response){
     if (response.ok){return response.json();}
@@ -27,6 +7,8 @@ fetch("http://localhost:3000/api/products")
     afficherproduits(article);
   })
   .catch((error)=>alert("message"+ error));
+
+  // Afficher la page d'un produit avec les éléments, image, description
 
   function afficherproduits(article){
     for(let produit=0;produit<article.length;produit++){

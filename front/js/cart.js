@@ -85,12 +85,13 @@ async function infosproduit() {
         let searchproduct = tableaupanier.find(a => a.id == recupid && a.couleur == recupcouleur);
         // Nouvelle quantité de l'article
         searchproduct.quantite = newquantity;
-        if (searchproduct.quantite <= 0) {
-          tableaupanier = tableaupanier.filter(a => a.id != recupid || a.couleur != recupcouleur);
+        if (searchproduct.quantite > 0 && searchproduct.quantite <= 100) {
+          // Mise à jour du panier
+          savePanier(tableaupanier);
+          location.reload();
+          // tableaupanier = tableaupanier.filter(a => a.id != recupid || a.couleur != recupcouleur);
         }
-        // Mise à jour du panier
-        savePanier(tableaupanier);
-        location.reload();
+
       }
       )
     })
@@ -137,7 +138,6 @@ prenom.addEventListener('change', (e) => {
   const firstNameErrorMsg = document.getElementById("firstNameErrorMsg");
   if (firstname == false) {
     firstNameErrorMsg.innerHTML = "Vérifier le prénom";
-    e.stopPropagation();
   }
   else {
     firstNameErrorMsg.innerHTML = " ";
@@ -152,7 +152,6 @@ nom.addEventListener('change', (e) => {
   const lastNameErrorMsg = document.getElementById("lastNameErrorMsg");
   if (lastname == false) {
     lastNameErrorMsg.innerHTML = "Vérifier le nom";
-    e.stopPropagation();
   }
   else {
     lastNameErrorMsg.innerHTML = " ";
@@ -167,7 +166,6 @@ adresse.addEventListener('change', (e) => {
   const adressErrorMsg = document.getElementById("addressErrorMsg");
   if (adress == false) {
     adressErrorMsg.innerHTML = "Vérifier l'adresse";
-    e.stopPropagation();
   }
   else {
     adressErrorMsg.innerHTML = " ";
@@ -182,7 +180,6 @@ ville.addEventListener('change', (e) => {
   const cityErrorMsg = document.getElementById("cityErrorMsg");
   if (city == false) {
     cityErrorMsg.innerHTML = "Vérifier la ville";
-    e.stopPropagation();
   }
   else {
     cityErrorMsg.innerHTML = " ";
@@ -197,7 +194,6 @@ mail.addEventListener('change', (e) => {
   const mailErrorMsg = document.getElementById("emailErrorMsg");
   if (email == false) {
     mailErrorMsg.innerHTML = "Vérifier l'email";
-    e.stopPropagation();
   }
   else {
     mailErrorMsg.innerHTML = " ";
@@ -257,7 +253,7 @@ function emailValid(mail) {
 // permet de retrouver le numéro de commande et de rediriger vers une page de confirmation
 commander.addEventListener('click', () => {
   // Vérification des valeurs valides du formulaire client
-  if (firstname && lastname && email && city && adress) {
+  if (firstname && lastname && adress && city && email) {
     let contact = {
       firstName: document.querySelector("#firstName").value,
       lastName: document.querySelector("#lastName").value,
