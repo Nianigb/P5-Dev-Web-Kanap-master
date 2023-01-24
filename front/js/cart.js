@@ -252,7 +252,10 @@ function emailValid(mail) {
 // Au moment du clic pour commander,
 // permet de retrouver le numéro de commande et de rediriger vers une page de confirmation
 commander.addEventListener('click', () => {
-  // Vérification des valeurs valides du formulaire client
+  passerCommande();
+
+})
+async function passerCommande() {
   if (firstname && lastname && adress && city && email) {
     let contact = {
       firstName: document.querySelector("#firstName").value,
@@ -267,30 +270,21 @@ commander.addEventListener('click', () => {
       products.push(eltpanier.id);
     }
 
-    // requête post envoi des données au formulaire pour effectuer la commande 
-    const headers = {
-      "Content-Type": "application/json"
+    try {
+      const response = await fetch('http://localhost:3000/api/products/order', {
+        method: 'POST',
+        body: JSON.stringify({products, contact}),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      const data = await response.json();
+      location.href = `confirmation.html?orderId=${data.orderId}`;
+      localStorage.clear();
+    } catch (error) {
+      console.error(error);
     }
-
-    fetch("http://localhost:3000/api/products/order", {
-      method: "POST",
-      headers: headers,
-      body: JSON.stringify({
-        contact: contact,
-        products: products,
-      }),
-    })
-      .then((response) => response.json())
-      .then((valeur) => {
-        let id = valeur.orderId;
-        localStorage.setItem("objet", id);
-        location.href = "confirmation.html?id=" + id;
-      })
-      .finally((end) =>
-        localStorage.clear())
   }
-  else {
-    alert("Erreur");
-  }
-})
 
+
+}
